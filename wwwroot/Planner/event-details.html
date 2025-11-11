@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Details - EventManager</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #041915;
+            --primary: #1e493d;
+            --secondary: #bf8c73;
+            --tertiary: #2a5f47;
+            --quaternary: #d4a589;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(4, 25, 21, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            padding: 0.8rem 0.5rem !important;
+            background-color: var(--accent) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .navbar .container-fluid {
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            padding: 0 0.5rem !important;
+            justify-content: space-between !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            z-index: 1000 !important;
+            position: relative !important;
+            margin-left: 40px !important;
+        }
+
+        .navbar-brand img {
+            height: 20px !important;
+            margin-right: 4px !important;
+        }
+
+        .navbar-brand span {
+            font-size: 0.8rem !important;
+            color: #fff !important;
+            font-weight: bold !important;
+        }
+
+        .dropdown {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .dropdown-toggle {
+            color: #fff !important;
+            text-decoration: none !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 0.75rem !important;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--secondary) !important;
+        }
+
+        .dropdown-toggle img {
+            width: 18px !important;
+            height: 18px !important;
+            margin-right: 4px !important;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 4px !important;
+            border-top: 0.18em solid #fff !important;
+            border-right: 0.18em solid transparent !important;
+            border-left: 0.18em solid transparent !important;
+        }
+
+        .dropdown-menu {
+            background: rgba(4, 25, 21, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            position: absolute !important;
+            top: calc(100% + 5px) !important;
+            right: 0 !important;
+            left: auto !important;
+            min-width: 110px !important;
+            z-index: 1001 !important;
+            padding: 0.4rem 0 !important;
+        }
+
+        .dropdown-item {
+            color: #fff !important;
+            padding: 0.3rem 0.7rem !important;
+            font-size: 0.7rem !important;
+        }
+
+        .dropdown-item i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 0.75rem !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar-toggle {
+            display: none !important;
+            position: fixed !important;
+            top: 12px !important;
+            left: 10px !important;
+            z-index: 1001 !important;
+            cursor: pointer !important;
+            padding: 5px !important;
+        }
+
+        .sidebar-toggle span {
+            width: 25px !important;
+            height: 3px !important;
+            background: #fff !important;
+            margin: 5px 0 !important;
+            display: block !important;
+        }
+
+        .sidebar {
+            width: 250px !important;
+            background: rgba(30, 73, 61, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            padding-top: 80px !important;
+            background-color: var(--primary) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            display: block !important;
+        }
+
+        .sidebar .nav-link {
+            color: #fff !important;
+            padding: 10px 20px !important;
+            font-size: 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 10px !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+            padding: 2rem !important;
+            min-height: 100vh !important;
+            padding-top: 80px !important;
+            background-color: #fff !important;
+        }
+
+        .page-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 1rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 1px solid #eee !important;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem !important;
+            color: var(--primary) !important;
+            margin: 0 !important;
+            position: relative !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 3px solid var(--secondary) !important;
+        }
+
+        .event-details {
+            max-width: 800px !important;
+            margin: 0 auto !important;
+            display: none;
+        }
+
+        .event-details.visible {
+            display: block !important;
+        }
+
+        .event-details table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+
+        .event-details th, .event-details td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .event-details th {
+            background-color: var(--primary);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .event-details td {
+            background-color: #f8f9fa;
+        }
+
+        .guest-list {
+            margin-top: 2rem !important;
+        }
+
+        .guest-list h5 {
+            font-size: 1.2rem !important;
+            color: var(--primary) !important;
+            margin-bottom: 1rem !important;
+        }
+
+        .guest-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .guest-list th, .guest-list td {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .guest-list th {
+            background-color: var(--primary);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .guest-list td {
+            background-color: #f8f9fa;
+        }
+
+        .present-yes {
+            color: green;
+            font-weight: bold;
+        }
+
+        .present-no {
+            color: red;
+            font-weight: bold;
+        }
+
+        .loading-state {
+            text-align: center !important;
+            padding: 2rem !important;
+        }
+
+        .spinner {
+            width: 3rem !important;
+            height: 3rem !important;
+            border: 5px solid #f3f3f3 !important;
+            border-top: 5px solid var(--primary) !important;
+            border-radius: 50% !important;
+            animation: spin 1s linear infinite !important;
+            margin: 0 auto 1rem !important;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 0.5rem !important;
+            }
+
+            .navbar-brand {
+                margin-left: 40px !important;
+            }
+
+            .navbar .container-fluid {
+                padding: 0 0.5rem !important;
+                justify-content: space-between !important;
+            }
+
+            .dropdown-toggle {
+                font-size: 0.65rem !important;
+            }
+
+            .dropdown-toggle img {
+                width: 16px !important;
+                height: 16px !important;
+                margin-right: 3px !important;
+            }
+
+            .dropdown-toggle::after {
+                border-top: 0.16em solid #fff !important;
+                border-right: 0.16em solid transparent !important;
+                border-left: 0.16em solid transparent !important;
+            }
+
+            .sidebar-toggle {
+                display: block !important;
+                left: 10px !important;
+                top: 12px !important;
+            }
+
+            .sidebar {
+                width: 200px !important;
+                padding-top: 80px !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s ease !important;
+            }
+
+            .sidebar.active {
+                transform: translateX(0) !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 80px !important;
+            }
+
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .page-header h1 {
+                margin-bottom: 1rem !important;
+            }
+
+            .event-details table, .guest-list table {
+                font-size: 0.9rem;
+            }
+
+            .event-details th, .event-details td,
+            .guest-list th, .guest-list td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/planner/dashboard.html">
+                <img src="/assets/logo.png" alt="Logo" class="me-2">
+                <span class="text-white fw-bold">EventManager</span>
+            </a>
+            <div class="dropdown">
+                <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/assets/user-placeholder.png" alt="User" class="rounded-circle me-2">
+                    <span id="userName">Planner Name</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
+                    <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/planner/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a class="nav-link active" href="/planner/my-events.html"><i class="fas fa-calendar-alt"></i> My Events</a>
+            <a class="nav-link" href="/planner/create-event.html"><i class="fas fa-plus-circle"></i> Create Events</a>
+            <a class="nav-link" href="/planner/upcoming-events.html"><i class="fas fa-calendar-check"></i> Upcoming Events</a>
+            <a class="nav-link" href="/planner/make-payment.html"><i class="fas fa-credit-card"></i> Make Payment</a>
+            <a class="nav-link" href="/planner/transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a class="nav-link" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Event Details</h1>
+            <div>
+                <a href="/planner/edit-event.html?eventId=" id="editEventLink" class="btn btn-primary" style="background-color: var(--primary); border: none;">Edit Event</a>
+            </div>
+        </div>
+
+        <div class="event-details" id="eventDetails">
+            <table>
+                <tr>
+                    <th>Event Name</th>
+                    <td id="eventName">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Location</th>
+                    <td id="location">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Date</th>
+                    <td id="date">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Time</th>
+                    <td id="time">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td id="description">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Number of Guests</th>
+                    <td id="numberOfGuests">Loading...</td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td id="status">Loading...</td>
+                </tr>
+            </table>
+
+            <div class="guest-list">
+                <h5>Guests & QR Codes</h5>
+                <div class="mb-3">
+                    <button id="downloadQrCodesZip" class="btn btn-primary" style="background-color: var(--primary); border: none;">Download All QR Codes as ZIP</button>
+                </div>
+                <table id="guestListTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>QR Code</th>
+                            <th>Present</th>
+                        </tr>
+                    </thead>
+                    <tbody id="guestList"></tbody>
+                </table>
+            </div>
+
+            <div class="mt-3">
+                <a href="/planner/scan-event.html?eventId=" id="scanEventLink" class="btn btn-primary" style="background-color: var(--primary); border: none;">Scan QR Codes</a>
+            </div>
+        </div>
+
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEventId;
+        let guestsData = []; // To store guest data for updating presence
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "/auth/login.html";
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const eventId = urlParams.get('eventId');
+            if (!eventId) {
+                alert("Event ID not provided.");
+                window.location.href = "/planner/my-events.html";
+                return;
+            }
+
+            currentEventId = eventId;
+            console.log("Event ID:", currentEventId); // Debug: Verify eventId
+
+            await fetchUserProfile(token);
+            await fetchEventDetails(eventId, token);
+
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (window.innerWidth <= 768) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    const dropdown = document.querySelector('.dropdown-menu');
+                    const dropdownToggle = document.querySelector('.dropdown-toggle');
+                    if (!sidebarToggle.contains(e.target) && !sidebar.contains(e.target) && !dropdown.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            }
+
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            document.getElementById('editEventLink').href = `/planner/edit-event.html?eventId=${eventId}`;
+            document.getElementById('scanEventLink').href = `/planner/scan-event.html?eventId=${eventId}`;
+
+            // Attach the download function to the button
+            const downloadQrCodesZipButton = document.getElementById('downloadQrCodesZip');
+            downloadQrCodesZipButton.addEventListener('click', downloadQrCodesZip);
+
+            // Check if returning from scan-event.html with updated guest status
+            const scannedGuestId = localStorage.getItem('scannedGuestId');
+            if (scannedGuestId) {
+                updateGuestPresence(scannedGuestId);
+                localStorage.removeItem('scannedGuestId'); // Clear the flag
+            }
+        });
+
+        async function downloadQrCodesZip() {
+            try {
+                // Verify we have required data
+                if (!currentEventId) {
+                    throw new Error("No event selected");
+                }
+                
+                if (guestsData.length === 0) {
+                    throw new Error("No guests available for this event");
+                }
+
+                console.log("Starting QR code download for event:", currentEventId);
+                
+                const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+                if (!token) {
+                    throw new Error("Not authenticated");
+                }
+
+                const response = await fetch(`http://localhost:5203/api/zipdownload/event/${currentEventId}/qrcodes/zip`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/zip'
+                    }
+                });
+
+                console.log("Download response status:", response.status);
+                console.log("Response headers:", [...response.headers.entries()]);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Server error:", errorText);
+                    throw new Error(`Download failed: ${errorText} (Status: ${response.status})`);
+                }
+
+                const blob = await response.blob();
+                if (blob.size === 0) {
+                    throw new Error("Received empty file");
+                }
+
+                console.log("Blob size:", blob.size, "bytes");
+
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Event_${currentEventId}_QRCodes.zip`;
+                document.body.appendChild(a);
+                a.click();
+                
+                // Cleanup
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+
+                console.log("Download completed successfully");
+            } catch (error) {
+                console.error("Download error:", error);
+                alert(`Download failed: ${error.message}`);
+            }
+        }
+
+        async function fetchUserProfile(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/planner/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                console.log("User fetch status:", response.status);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log("User fetch error:", errorText);
+                    if (response.status === 401) {
+                        console.log("Unauthorized: Invalid or expired token, redirecting to login.");
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        return;
+                    }
+                    throw new Error(`Failed to fetch user profile: ${response.status}`);
+                }
+
+                const userData = await response.json();
+                console.log("User data:", userData);
+                document.getElementById('userName').textContent = userData.fullName || userData.username || 'Planner';
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+                document.getElementById('userName').textContent = 'Planner';
+            }
+        }
+
+        async function fetchEventDetails(eventId, token) {
+            const loadingState = document.getElementById('loadingState');
+            const eventDetails = document.getElementById('eventDetails');
+            const downloadQrCodesZipButton = document.getElementById('downloadQrCodesZip');
+            loadingState.style.display = 'block';
+            eventDetails.style.display = 'none';
+
+            try {
+                console.log(`Fetching event details for eventId: ${eventId}`);
+                console.log(`Using token: ${token}`);
+
+                const response = await fetch(`http://localhost:5203/api/event/${eventId}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                console.log(`Response status: ${response.status}`);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log(`Error response text: ${errorText}`);
+                    if (response.status === 401) {
+                        console.log("Unauthorized: Invalid or expired token, redirecting to login.");
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        return;
+                    } else if (response.status === 403) {
+                        throw new Error("You are not authorized to view this event.");
+                    } else if (response.status === 404) {
+                        throw new Error(`Event with ID ${eventId} not found.`);
+                    }
+                    throw new Error(`Failed to fetch event details: ${errorText} (Status: ${response.status})`);
+                }
+
+                const data = await response.json();
+                console.log("Full event response:", data);
+
+                if (!data.event) {
+                    throw new Error("API response does not contain an 'event' property. Response: " + JSON.stringify(data));
+                }
+
+                const event = data.event;
+                const guests = data.guests || [];
+                const qrCodes = data.qrCodes || [];
+
+                console.log("Event properties:", Object.keys(event));
+                console.log("Event object:", event);
+                console.log("Guests array:", guests);
+                console.log("QR Codes array:", qrCodes);
+                console.log("Event status:", event.status);
+
+                // Map status from numeric to string
+                const statusMap = {
+                    0: "Draft",
+                    1: "Active",
+                    2: "Completed",
+                    3: "Cancelled"
+                };
+                const eventStatus = statusMap[event.status] || "Unknown";
+
+                // Verify DOM elements exist
+                const eventNameElement = document.getElementById('eventName');
+                const locationElement = document.getElementById('location');
+                const dateElement = document.getElementById('date');
+                const timeElement = document.getElementById('time');
+                const descriptionElement = document.getElementById('description');
+                const numberOfGuestsElement = document.getElementById('numberOfGuests');
+                const statusElement = document.getElementById('status');
+                const guestListElement = document.getElementById('guestList');
+
+                if (!eventNameElement || !locationElement || !dateElement || !timeElement || 
+                    !descriptionElement || !numberOfGuestsElement || !statusElement || !guestListElement) {
+                    console.error("One or more DOM elements are missing!");
+                    throw new Error("Failed to find required DOM elements for displaying event details.");
+                }
+
+                // Update event details
+                eventNameElement.textContent = event.eventName || event.EventName || 'N/A';
+                locationElement.textContent = event.location || event.Location || 'N/A';
+                dateElement.textContent = event.date ? new Date(event.date).toLocaleDateString() : 'N/A';
+                timeElement.textContent = event.time || event.Time || 'N/A';
+                descriptionElement.textContent = event.description || event.Description || 'N/A';
+                numberOfGuestsElement.textContent = event.numberOfGuests || event.NumberOfGuests || 0;
+                statusElement.textContent = eventStatus;
+
+                // Store guests data for updating presence and download
+                guestsData = guests;
+
+                // Update guest list in table format
+                guestListElement.innerHTML = '';
+                if (guests.length === 0) {
+                    guestListElement.innerHTML = '<tr><td colspan="5">No guests found for this event.</td></tr>';
+                    downloadQrCodesZipButton.style.display = 'none'; // Hide ZIP download if no guests
+                } else {
+                    downloadQrCodesZipButton.style.display = 'inline-block'; // Show ZIP download button
+                    guests.forEach((guest, index) => {
+                        try {
+                            console.log(`Processing guest ${index}:`, guest);
+                            console.log(`Guest QR code: ${guest.qrCode}`);
+                            const qrCode = qrCodes.find(q => q.qrCodeValue === guest.qrCode);
+                            console.log(`Found QR code:`, qrCode);
+
+                            const isPresent = guest.status === "Present" ? "Yes" : "No";
+                            const presentClass = guest.status === "Present" ? "present-yes" : "present-no";
+
+                            if (qrCode && qrCode.id) {
+                                guestListElement.innerHTML += `
+                                    <tr data-guest-id="${guest.id}">
+                                        <td>${index + 1}</td>
+                                        <td>${guest.name || 'N/A'}</td>
+                                        <td>${guest.email || 'N/A'}</td>
+                                        <td>${guest.qrCode || 'N/A'}</td>
+                                        <td class="present-status ${presentClass}">${isPresent}</td>
+                                    </tr>
+                                `;
+                            } else {
+                                console.warn(`No QR code found for guest ${guest.name || 'unknown'} (QR: ${guest.qrCode})`);
+                                guestListElement.innerHTML += `
+                                    <tr data-guest-id="${guest.id}">
+                                        <td>${index + 1}</td>
+                                        <td>${guest.name || 'N/A'}</td>
+                                        <td>${guest.email || 'N/A'}</td>
+                                        <td>${guest.qrCode || 'N/A'} (No QR code available)</td>
+                                        <td class="present-status ${presentClass}">${isPresent}</td>
+                                    </tr>
+                                `;
+                            }
+                        } catch (guestError) {
+                            console.error(`Error processing guest ${index}:`, guestError);
+                        }
+                    });
+                }
+
+                // Show event details
+                eventDetails.style.display = 'block';
+                eventDetails.classList.add('visible');
+                console.log("Event details displayed:", eventDetails.style.display);
+            } catch (error) {
+                console.error("Error fetching event details:", error);
+                let errorMessage = error.message || "An unknown error occurred while loading event details";
+                if (errorMessage.includes("not authorized")) {
+                    errorMessage += " Please ensure you are the owner of this event.";
+                } else if (errorMessage.includes("not found")) {
+                    errorMessage += " It may have been deleted or never existed.";
+                }
+                alert(`Failed to load event details: ${errorMessage}`);
+                window.location.href = "/planner/my-events.html";
+            } finally {
+                loadingState.style.display = 'none';
+                console.log("Loading state hidden:", loadingState.style.display);
+            }
+        }
+
+        function updateGuestPresence(guestId) {
+            const guest = guestsData.find(g => g.id == guestId);
+            if (guest) {
+                guest.status = "Present";
+                const row = document.querySelector(`tr[data-guest-id="${guestId}"]`);
+                if (row) {
+                    const presentCell = row.querySelector('.present-status');
+                    presentCell.textContent = "Yes";
+                    presentCell.classList.remove('present-no');
+                    presentCell.classList.add('present-yes');
+                }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("jwtToken");
+            sessionStorage.removeItem("jwtToken");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>

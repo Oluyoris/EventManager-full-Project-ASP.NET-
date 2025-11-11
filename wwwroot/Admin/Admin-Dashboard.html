@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EventManager</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2Lw==" crossorigin="anonymous">
+    <style>
+        :root {
+            --accent: #041915;
+            --primary: #1e493d;
+            --secondary: #bf8c73;
+            --tertiary: #2a5f47;
+            --quaternary: #d4a589;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #e0e0e0;
+            color: var(--primary);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(4, 25, 21, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 1rem 0.5rem;
+        }
+
+        .navbar-brand {
+            z-index: 1000;
+            position: relative;
+        }
+
+        .navbar-brand img {
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .navbar-brand span {
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .dropdown-toggle {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--secondary);
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 4px;
+            border-top: 0.2em solid #fff;
+            border-right: 0.2em solid transparent;
+            border-left: 0.2em solid transparent;
+        }
+
+        .dropdown-menu {
+            background: rgba(4, 25, 21, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            left: auto;
+            min-width: 120px;
+            z-index: 1001;
+            padding: 0.4rem 0;
+        }
+
+        .dropdown-item {
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--tertiary);
+            color: var(--secondary);
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 10px;
+            z-index: 1001;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .sidebar-toggle span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 5px 0;
+            display: block;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--tertiary);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 80px;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar .nav-link {
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .welcome-text {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding-left: 50px;
+            color: var(--primary);
+        }
+
+        .stats-card {
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stats-card h5 {
+            font-size: 1rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-card p {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 0;
+            color: #fff;
+        }
+
+        .stats-card.total-events {
+            background: linear-gradient(135deg, var(--quaternary) 0%, #c48b70 100%);
+        }
+
+        .stats-card.completed-events {
+            background: linear-gradient(135deg, var(--primary) 0%, #15362e 100%);
+        }
+
+        .stats-card.upcoming-events {
+            background: linear-gradient(135deg, var(--tertiary) 0%, #1e493d 100%);
+        }
+
+        .stats-card.total-users {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FFA500 100%);
+        }
+
+        .stats-card.total-income {
+            background: linear-gradient(135deg, var(--secondary) 0%, #a5735b 100%);
+        }
+
+        .stats-card.total-transactions {
+            background: linear-gradient(135deg, #4CAF50 0%, #388E3C 100%);
+        }
+
+        .analytics-section {
+            margin-top: 2rem;
+        }
+
+        .analytics-section h4 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .analytics-placeholder {
+            background: rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        @media (min-width: 769px) {
+            .navbar-brand {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(0);
+            }
+
+            .sidebar-toggle {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 250px;
+                padding-top: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1.2rem 0.5rem;
+            }
+
+            .navbar-brand {
+                margin-left: 40px;
+            }
+
+            .dropdown-toggle {
+                font-size: 0.75rem;
+            }
+
+            .dropdown-toggle::after {
+                border-top: 0.18em solid #fff;
+                border-right: 0.18em solid transparent;
+                border-left: 0.18em solid transparent;
+            }
+
+            .sidebar {
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 90px;
+            }
+
+            .stats-card {
+                margin-bottom: 1rem;
+                padding: 1rem;
+            }
+
+            .stats-card h5 {
+                font-size: 0.9rem;
+            }
+
+            .stats-card p {
+                font-size: 1.2rem;
+            }
+
+            .row.g-4 {
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .col-6 {
+                flex: 0 0 auto;
+                width: 50%;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .welcome-text {
+                font-size: 1.1rem;
+                padding-left: 50px;
+            }
+
+            .dropdown-menu {
+                right: 10px;
+                left: auto;
+                top: 100%;
+                margin-top: 5px;
+                min-width: 110px;
+                z-index: 1001;
+            }
+
+            .dropdown-item {
+                padding: 0.3rem 0.7rem;
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .welcome-text {
+                font-size: 1rem;
+            }
+
+            .stats-card {
+                padding: 0.8rem;
+            }
+
+            .stats-card h5 {
+                font-size: 0.8rem;
+            }
+
+            .stats-card p {
+                font-size: 1rem;
+            }
+
+            .analytics-section h4 {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/admin/admin-dashboard.html">
+                <img src="/assets/logo.png" alt="Logo" class="me-2" style="height: 20px;">
+                <span class="text-white fw-bold">EventManager</span>
+            </a>
+            <div class="me-3 d-flex align-items-center">
+                <div class="dropdown">
+                    <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span id="userName">Admin Name</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="/admin/profile-settings.html">Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar toggle button -->
+    <div class="sidebar-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- Sidebar navigation -->
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link active" href="/admin/admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a class="nav-link" href="/admin/users.html"><i class="fas fa-users"></i> Users</a>
+            <a class="nav-link" href="/admin/Events.html"><i class="fas fa-calendar-alt"></i> Events </a>
+            <a class="nav-link" href="/admin/payment-settings.html"><i class="fas fa-credit-card"></i> Payment Settings</a>
+            <a class="nav-link" href="/admin/create-event.html"><i class="fas fa-plus-circle"></i> Create Event</a>
+            <a class="nav-link" href="/admin/transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a class="nav-link" href="/admin/email-service.html"><i class="fas fa-envelope"></i> Email Service</a>
+            <a class="nav-link" href="/admin/site-settings.html"><i class="fas fa-cog"></i> Site Settings</a>
+            <a class="nav-link" href="/admin/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="main-content">
+        <h2 class="welcome-text">Welcome, Admin Name</h2>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card total-events">
+                    <h5>Total Events</h5>
+                    <p id="totalEvents">0</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card completed-events">
+                    <h5>Completed Events</h5>
+                    <p id="completedEvents">0</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card upcoming-events">
+                    <h5>Upcoming Events</h5>
+                    <p id="upcomingEvents">0</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card total-users">
+                    <h5>Total Users</h5>
+                    <p id="totalUsers">0</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card total-income">
+                    <h5>Total Income</h5>
+                    <p id="totalIncome">₦0.00</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-6">
+                <div class="stats-card total-transactions">
+                    <h5>Total Transactions</h5>
+                    <p id="totalTransactions">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="analytics-section">
+            <h4>Analytics Tree</h4>
+            <div class="analytics-placeholder">
+                <p>Analytics tree placeholder (Chart.js integration coming soon).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            if (!token) {
+                console.log("[AdminDashboard] No JWT token found, redirecting to login");
+                window.location.href = "/auth/login.html";
+                return;
+            }
+
+            await loadDashboardData(token);
+
+            // Setup sidebar toggle
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            // Close sidebar on outside click
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('.dropdown-menu');
+                const dropdownToggle = document.querySelector('.dropdown-toggle');
+                if (!sidebarToggle.contains(e.target) && !sidebar.contains(e.target) && !dropdown.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            // Setup logout link
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+        });
+
+        async function loadDashboardData(token) {
+            try {
+                // Fetch admin profile
+                const profileResponse = await fetch("http://localhost:5203/api/admin/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!profileResponse.ok) {
+                    if (profileResponse.status === 401) {
+                        console.log("[AdminDashboard] Unauthorized (401), clearing tokens and redirecting to login");
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        return;
+                    }
+                    throw new Error(`Failed to fetch profile: ${profileResponse.status}`);
+                }
+
+                const profileData = await profileResponse.json();
+                console.log("[AdminDashboard] Profile data:", JSON.stringify(profileData, null, 2));
+
+                // Update UI with profile data
+                document.querySelector(".welcome-text").textContent = `Welcome, ${profileData.fullName || profileData.username || 'Admin Name'}`;
+                document.getElementById("userName").textContent = profileData.fullName || profileData.username || 'Admin Name';
+
+                // Fetch dashboard analytics
+                const analyticsResponse = await fetch("http://localhost:5203/api/admin/dashboard", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!analyticsResponse.ok) {
+                    throw new Error(`Failed to fetch analytics: ${analyticsResponse.status}`);
+                }
+
+                const analyticsData = await analyticsResponse.json();
+                console.log("[AdminDashboard] Analytics data:", JSON.stringify(analyticsData, null, 2));
+
+                // Update UI with analytics data
+                document.getElementById("totalEvents").textContent = analyticsData.totalEvents || 0;
+                document.getElementById("completedEvents").textContent = analyticsData.totalCompletedEvents || 0;
+                document.getElementById("upcomingEvents").textContent = analyticsData.totalUpcomingEvents || 0;
+                document.getElementById("totalUsers").textContent = analyticsData.totalUsers || 0;
+                document.getElementById("totalIncome").textContent = `₦${(analyticsData.totalIncome || 0).toFixed(2)}`;
+                document.getElementById("totalTransactions").textContent = analyticsData.totalTransactions || 0;
+            } catch (error) {
+                console.error("[AdminDashboard] Error loading dashboard data:", error);
+                localStorage.removeItem("jwtToken");
+                sessionStorage.removeItem("jwtToken");
+                window.location.href = "/auth/login.html";
+            }
+        }
+
+        function logout() {
+            console.log("[AdminDashboard] Logging out");
+            localStorage.removeItem("jwtToken");
+            sessionStorage.removeItem("jwtToken");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>

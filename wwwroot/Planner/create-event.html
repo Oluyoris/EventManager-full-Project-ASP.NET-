@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Event - EventManager</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #041915;
+            --primary: #1e493d;
+            --secondary: #bf8c73;
+            --tertiary: #2a5f47;
+            --quaternary: #d4a589;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(4, 25, 21, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            padding: 0.8rem 0.5rem !important;
+            background-color: var(--accent) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .navbar .container-fluid {
+            display: flex !important;
+            align-items: center !important;
+            width: 100% !important;
+            padding: 0 0.5rem !important;
+            justify-content: space-between !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            z-index: 1000 !important;
+            position: relative !important;
+            margin-left: 40px !important;
+        }
+
+        .navbar-brand img {
+            height: 20px !important;
+            margin-right: 4px !important;
+        }
+
+        .navbar-brand span {
+            font-size: 0.8rem !important;
+            color: #fff !important;
+            font-weight: bold !important;
+        }
+
+        .dropdown {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .dropdown-toggle {
+            color: #fff !important;
+            text-decoration: none !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 0.75rem !important;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--secondary) !important;
+        }
+
+        .dropdown-toggle img {
+            width: 18px !important;
+            height: 18px !important;
+            margin-right: 4px !important;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 4px !important;
+            border-top: 0.18em solid #fff !important;
+            border-right: 0.18em solid transparent !important;
+            border-left: 0.18em solid transparent !important;
+        }
+
+        .dropdown-menu {
+            background: rgba(4, 25, 21, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            position: absolute !important;
+            top: calc(100% + 5px) !important;
+            right: 0 !important;
+            left: auto !important;
+            min-width: 110px !important;
+            z-index: 1001 !important;
+            padding: 0.4rem 0 !important;
+        }
+
+        .dropdown-item {
+            color: #fff !important;
+            padding: 0.3rem 0.7rem !important;
+            font-size: 0.7rem !important;
+        }
+
+        .dropdown-item i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 0.75rem !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar-toggle {
+            display: none !important;
+            position: fixed !important;
+            top: 12px !important;
+            left: 10px !important;
+            z-index: 1001 !important;
+            cursor: pointer !important;
+            padding: 5px !important;
+        }
+
+        .sidebar-toggle span {
+            width: 25px !important;
+            height: 3px !important;
+            background: #fff !important;
+            margin: 5px 0 !important;
+            display: block !important;
+        }
+
+        .sidebar {
+            width: 250px !important;
+            background: rgba(30, 73, 61, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            padding-top: 80px !important;
+            background-color: var(--primary) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            display: block !important;
+        }
+
+        .sidebar .nav-link {
+            color: #fff !important;
+            padding: 10px 20px !important;
+            font-size: 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 10px !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+            padding: 2rem !important;
+            min-height: 100vh !important;
+            padding-top: 80px !important;
+            background-color: #fff !important;
+        }
+
+        .page-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 1rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 1px solid #eee !important;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem !important;
+            color: var(--primary) !important;
+            margin: 0 !important;
+            position: relative !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 3px solid var(--secondary) !important;
+        }
+
+        .event-form {
+            max-width: 600px !important;
+            margin: 0 auto !important;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem !important;
+        }
+
+        .form-group label {
+            font-weight: 500 !important;
+            color: #666 !important;
+            margin-bottom: 0.5rem !important;
+            display: block !important;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100% !important;
+            padding: 0.5rem !important;
+            border-radius: 4px !important;
+            border: 1px solid #ddd !important;
+            color: #333 !important;
+        }
+
+        .form-group textarea {
+            resize: vertical !important;
+            min-height: 100px !important;
+        }
+
+        .cost-breakdown {
+            background-color: #f8f9fa !important;
+            padding: 1rem !important;
+            border-radius: 4px !important;
+            margin-bottom: 1.5rem !important;
+            font-size: 0.9rem !important;
+        }
+
+        .cost-breakdown p {
+            margin: 0.5rem 0 !important;
+            color: #333 !important;
+        }
+
+        .cost-breakdown strong {
+            color: var(--primary) !important;
+        }
+
+        .feedback-message {
+            margin-top: 1rem !important;
+            padding: 1rem !important;
+            border-radius: 4px !important;
+            display: none !important;
+        }
+
+        .feedback-message.success {
+            background-color: #e6f4ea !important;
+            color: var(--tertiary) !important;
+        }
+
+        .feedback-message.error {
+            background-color: #f8d7da !important;
+            color: #dc3545 !important;
+        }
+
+        .loading-state {
+            text-align: center !important;
+            padding: 2rem !important;
+            display: none !important;
+        }
+
+        .spinner {
+            width: 3rem !important;
+            height: 3rem !important;
+            border: 5px solid #f3f3f3 !important;
+            border-top: 5px solid var(--primary) !important;
+            border-radius: 50% !important;
+            animation: spin 1s linear infinite !important;
+            margin: 0 auto 1rem !important;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (min-width: 769px) {
+            .navbar-brand {
+                margin-left: 0 !important;
+            }
+
+            .navbar .container-fluid {
+                justify-content: space-between !important;
+            }
+
+            .sidebar {
+                transform: translateX(0) !important;
+                display: block !important;
+            }
+
+            .sidebar-toggle {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 250px !important;
+                padding-top: 80px !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 0.5rem !important;
+            }
+
+            .navbar-brand {
+                margin-left: 40px !important;
+            }
+
+            .navbar .container-fluid {
+                padding: 0 0.5rem !important;
+                justify-content: space-between !important;
+            }
+
+            .dropdown-toggle {
+                font-size: 0.65rem !important;
+            }
+
+            .dropdown-toggle img {
+                width: 16px !important;
+                height: 16px !important;
+                margin-right: 3px !important;
+            }
+
+            .dropdown-toggle::after {
+                border-top: 0.16em solid #fff !important;
+                border-right: 0.16em solid transparent !important;
+                border-left: 0.16em solid transparent !important;
+            }
+
+            .sidebar-toggle {
+                display: block !important;
+                left: 10px !important;
+                top: 12px !important;
+            }
+
+            .sidebar {
+                width: 200px !important;
+                padding-top: 80px !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s ease !important;
+            }
+
+            .sidebar.active {
+                transform: translateX(0) !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 80px !important;
+            }
+
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .page-header h1 {
+                margin-bottom: 1rem !important;
+            }
+
+            .dropdown-menu {
+                right: 10px !important;
+                left: auto !important;
+                top: 100% !important;
+                margin-top: 5px !important;
+                min-width: 100px !important;
+                z-index: 1001 !important;
+            }
+
+            .dropdown-item {
+                padding: 0.3rem 0.7rem !important;
+                font-size: 0.65rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/planner/dashboard.html">
+                <img src="/assets/logo.png" alt="Logo" class="me-2">
+                <span class="text-white fw-bold">EventManager</span>
+            </a>
+            <div class="dropdown">
+                <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/assets/user-placeholder.png" alt="User" class="rounded-circle me-2">
+                    <span id="userName">Planner Name</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
+                    <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/planner/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a class="nav-link" href="/planner/my-events.html"><i class="fas fa-calendar-alt"></i> My Events</a>
+            <a class="nav-link active" href="/planner/create-event.html"><i class="fas fa-plus-circle"></i> Create Events</a>
+            <a class="nav-link" href="/planner/upcoming-events.html"><i class="fas fa-calendar-check"></i> Upcoming Events</a>
+            <a class="nav-link" href="/planner/make-payment.html"><i class="fas fa-credit-card"></i> Make Payment</a>
+            <a class="nav-link" href="/planner/transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a class="nav-link" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Create Event</h1>
+        </div>
+
+        <div class="event-form">
+            <div class="form-group">
+                <label for="eventName">Event Name</label>
+                <input type="text" id="eventName" placeholder="Enter event name" required>
+            </div>
+            <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" placeholder="Enter location" required>
+            </div>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <input type="date" id="date" required>
+            </div>
+            <div class="form-group">
+                <label for="time">Time</label>
+                <input type="time" id="time" required>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" placeholder="Enter event description"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="numberOfGuests">Number of Guests</label>
+                <input type="number" id="numberOfGuests" min="1" placeholder="Enter number of guests" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="addGuestDetails">
+                    Add Guest Details (Additional <span id="currencySymbol"></span><span id="guestDetailsFee">0</span> per guest)
+                </label>
+            </div>
+            <div class="cost-breakdown" id="costBreakdown">
+                <p><strong>Event Cost (<span id="currencySymbol1"></span><span id="eventPricePerGuest">0</span> per guest):</strong> <span id="currencySymbol2"></span><span id="eventCost">0</span></p>
+                <p><strong>Guest Details Fee (<span id="currencySymbol3"></span><span id="guestDetailsFeeDisplay">0</span> per guest if selected):</strong> <span id="currencySymbol4"></span><span id="guestDetailsCost">0</span></p>
+                <p><strong>Total Cost:</strong> <span id="currencySymbol5"></span><span id="totalCost">0</span></p>
+            </div>
+            <button class="btn btn-primary w-100" style="background-color: var(--primary); border: none;" onclick="proceedToCreateEvent()">Create Event</button>
+            <div class="feedback-message" id="feedbackMessage"></div>
+        </div>
+
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>Processing...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let eventPricePerGuest = 0;
+        let guestDetailsFee = 0;
+        let currency = 'NGN';
+        let currencySymbol = '₦';
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "/auth/login.html";
+                return;
+            }
+
+            await fetchUserProfile(token);
+            await fetchPricingSettings(token);
+
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (window.innerWidth <= 768) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    const dropdown = document.querySelector('.dropdown-menu');
+                    const dropdownToggle = document.querySelector('.dropdown-toggle');
+                    if (!sidebarToggle.contains(e.target) && !sidebar.contains(e.target) && !dropdown.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            }
+
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            // Update cost breakdown on input change
+            document.getElementById('numberOfGuests').addEventListener('input', updateCostBreakdown);
+            document.getElementById('addGuestDetails').addEventListener('change', updateCostBreakdown);
+        });
+
+        async function fetchUserProfile(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/planner/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                    }
+                    throw new Error("Failed to fetch user profile");
+                }
+
+                const userData = await response.json();
+                document.getElementById('userName').textContent = userData.fullName || userData.username || 'Planner';
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+                document.getElementById('userName').textContent = 'Planner';
+            }
+        }
+
+        async function fetchPricingSettings(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/settings/pricing", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                    }
+                    throw new Error("Failed to fetch pricing settings");
+                }
+
+                const data = await response.json();
+                eventPricePerGuest = data.eventPricePerGuest || 0;
+                guestDetailsFee = data.guestDetailsFee || 0;
+                currency = data.currency || 'NGN';
+
+                // Map currency to symbol
+                currencySymbol = currency === 'NGN' ? '₦' : currency === 'USD' ? '$' : currency;
+
+                document.getElementById('eventPricePerGuest').textContent = eventPricePerGuest.toFixed(2);
+                document.getElementById('guestDetailsFee').textContent = guestDetailsFee.toFixed(2);
+                document.getElementById('guestDetailsFeeDisplay').textContent = guestDetailsFee.toFixed(2);
+
+                // Update all currency symbols
+                document.getElementById('currencySymbol').textContent = currencySymbol;
+                document.getElementById('currencySymbol1').textContent = currencySymbol;
+                document.getElementById('currencySymbol2').textContent = currencySymbol;
+                document.getElementById('currencySymbol3').textContent = currencySymbol;
+                document.getElementById('currencySymbol4').textContent = currencySymbol;
+                document.getElementById('currencySymbol5').textContent = currencySymbol;
+
+                updateCostBreakdown();
+            } catch (error) {
+                console.error("Error fetching pricing settings:", error);
+                showFeedback('error', 'Failed to load pricing settings. Using default values.');
+                eventPricePerGuest = 500;
+                guestDetailsFee = 100;
+                currency = 'NGN';
+                currencySymbol = '₦';
+                document.getElementById('eventPricePerGuest').textContent = eventPricePerGuest.toFixed(2);
+                document.getElementById('guestDetailsFee').textContent = guestDetailsFee.toFixed(2);
+                document.getElementById('guestDetailsFeeDisplay').textContent = guestDetailsFee.toFixed(2);
+
+                document.getElementById('currencySymbol').textContent = currencySymbol;
+                document.getElementById('currencySymbol1').textContent = currencySymbol;
+                document.getElementById('currencySymbol2').textContent = currencySymbol;
+                document.getElementById('currencySymbol3').textContent = currencySymbol;
+                document.getElementById('currencySymbol4').textContent = currencySymbol;
+                document.getElementById('currencySymbol5').textContent = currencySymbol;
+
+                updateCostBreakdown();
+            }
+        }
+
+        function updateCostBreakdown() {
+            const numberOfGuests = parseInt(document.getElementById('numberOfGuests').value) || 0;
+            const addGuestDetails = document.getElementById('addGuestDetails').checked;
+
+            const eventCost = eventPricePerGuest * numberOfGuests;
+            const guestDetailsCost = addGuestDetails ? guestDetailsFee * numberOfGuests : 0;
+            const totalCost = eventCost + guestDetailsCost;
+
+            document.getElementById('eventCost').textContent = eventCost.toFixed(2);
+            document.getElementById('guestDetailsCost').textContent = guestDetailsCost.toFixed(2);
+            document.getElementById('totalCost').textContent = totalCost.toFixed(2);
+        }
+
+        async function proceedToCreateEvent() {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            const eventName = document.getElementById('eventName').value;
+            const location = document.getElementById('location').value;
+            const date = document.getElementById('date').value;
+            const time = document.getElementById('time').value;
+            const description = document.getElementById('description').value;
+            const numberOfGuests = parseInt(document.getElementById('numberOfGuests').value);
+            const addGuestDetails = document.getElementById('addGuestDetails').checked;
+
+            const feedbackMessage = document.getElementById('feedbackMessage');
+
+            if (!eventName || !location || !date || !time || !numberOfGuests) {
+                showFeedback('error', 'Please fill in all required fields.');
+                return;
+            }
+
+            const eventData = {
+                eventName,
+                location,
+                date: new Date(date).toISOString(),
+                time,
+                description,
+                numberOfGuests,
+                addGuestDetails,
+                guests: null // Will be populated in add-guest-details.html if needed
+            };
+
+            if (addGuestDetails) {
+                // Store event data in localStorage and redirect to add-guest-details.html
+                localStorage.setItem('pendingEventData', JSON.stringify(eventData));
+                window.location.href = `/planner/add-guest-details.html?numberOfGuests=${numberOfGuests}`;
+            } else {
+                // Proceed with event creation directly
+                await createEvent(eventData, token);
+            }
+        }
+
+        async function createEvent(eventData, token) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            const loadingState = document.getElementById('loadingState');
+
+            loadingState.style.display = 'block';
+            feedbackMessage.style.display = 'none';
+
+            try {
+                const response = await fetch("http://localhost:5203/api/event", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (!response.ok) {
+                    // Handle non-JSON response (e.g., "Insufficient balance. Please top up.")
+                    const errorText = await response.text();
+                    if (response.status === 401) {
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        throw new Error("Unauthorized access. Redirecting to login.");
+                    }
+                    throw new Error(errorText || "Failed to create event");
+                }
+
+                const eventResponse = await response.json();
+                showFeedback('success', 'Event created successfully! Redirecting to event details...');
+                setTimeout(() => {
+                    window.location.href = `/planner/event-details.html?eventId=${eventResponse.id}`;
+                }, 2000);
+            } catch (error) {
+                console.error("Error creating event:", error.message);
+                showFeedback('error', error.message);
+
+                // Redirect to make-payment.html if insufficient balance
+                if (error.message.includes('Insufficient balance')) {
+                    setTimeout(() => {
+                        window.location.href = '/planner/make-payment.html';
+                    }, 2000); // Redirect after 2 seconds
+                }
+            } finally {
+                loadingState.style.display = 'none';
+            }
+        }
+
+        function showFeedback(type, message) {
+            const feedbackMessage = document.getElementById('feedbackMessage');
+            feedbackMessage.className = `feedback-message ${type}`;
+            feedbackMessage.textContent = message;
+            feedbackMessage.style.display = 'block';
+        }
+
+        function logout() {
+            localStorage.removeItem("jwtToken");
+            sessionStorage.removeItem("jwtToken");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>

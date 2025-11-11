@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Event - EventManager</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        :root {
+            --accent: #041915;
+            --primary: #1e493d;
+            --secondary: #bf8c73;
+            --tertiary: #2a5f47;
+            --quaternary: #d4a589;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .navbar {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            z-index: 1000 !important;
+            background: rgba(4, 25, 21, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            padding: 0.8rem 0.5rem !important;
+            background-color: var(--accent) !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .navbar .container-fluid {
+            display: flex !important;
+            align-items: center !important;
+            width: 100 !important;
+            padding: 0 0.5rem !important;
+            justify-content: space-between !important;
+        }
+
+        .navbar-brand {
+            display: flex !important;
+            align-items: center !important;
+            z-index: 1000 !important;
+            position: relative !important;
+            margin-left: 40px !important;
+        }
+
+        .navbar-brand img {
+            height: 20px !important;
+            margin-right: 4px !important;
+        }
+
+        .navbar-brand span {
+            font-size: 0.8rem !important;
+            color: #fff !important;
+            font-weight: bold !important;
+        }
+
+        .dropdown {
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .dropdown-toggle {
+            color: #fff !important;
+            text-decoration: none !important;
+            display: flex !important;
+            align-items: center !important;
+            font-size: 0.75rem !important;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--secondary) !important;
+        }
+
+        .dropdown-menu {
+            background: rgba(4, 25, 21, 0.9) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            position: absolute !important;
+            top: calc(100% + 5px) !important;
+            right: 0 !important;
+            left: auto !important;
+            min-width: 110px !important;
+            z-index: 1001 !important;
+            padding: 0.4rem 0 !important;
+        }
+
+        .dropdown-item {
+            color: #fff !important;
+            padding: 0.3rem 0.7rem !important;
+            font-size: 0.7rem !important;
+        }
+
+        .dropdown-item i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 0.75rem !important;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar-toggle {
+            display: none !important;
+            position: fixed !important;
+            top: 12px !important;
+            left: 10px !important;
+            z-index: 1001 !important;
+            cursor: pointer !important;
+            padding: 5px !important;
+        }
+
+        .sidebar-toggle span {
+            width: 25px !important;
+            height: 3px !important;
+            background: #fff !important;
+            margin: 5px 0 !important;
+            display: block !important;
+        }
+
+        .sidebar {
+            width: 250px !important;
+            background: rgba(30, 73, 61, 0.9) !important;
+            backdrop-filter: blur(5px) !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            padding-top: 80px !important;
+            background-color: var(--primary) !important;
+            overflow-y: auto !important;
+            z-index: 999 !important;
+            display: block !important;
+        }
+
+        .sidebar .nav-link {
+            color: #fff !important;
+            padding: 10px 20px !important;
+            font-size: 1rem !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--tertiary) !important;
+            color: var(--secondary) !important;
+        }
+
+        .sidebar .nav-link i {
+            width: 20px !important;
+            text-align: center !important;
+            margin-right: 10px !important;
+        }
+
+        .main-content {
+            margin-left: 250px !important;
+            padding: 2rem !important;
+            min-height: 100vh !important;
+            padding-top: 80px !important;
+            background-color: #fff !important;
+        }
+
+        .page-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            margin-bottom: 1rem !important;
+            padding-bottom: 1rem !important;
+            border-bottom: 1px solid #eee !important;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem !important;
+            color: var(--primary) !important;
+            margin: 0 !important;
+            position: relative !important;
+            padding-bottom: 0.5rem !important;
+            border-bottom: 3px solid var(--secondary) !important;
+        }
+
+        .edit-form {
+            max-width: 600px !important;
+            margin: 0 auto !important;
+            padding: 2rem !important;
+            background-color: #f9f9f9 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem !important;
+        }
+
+        .form-group label {
+            display: block !important;
+            font-weight: 500 !important;
+            color: var(--primary) !important;
+            margin-bottom: 0.5rem !important;
+        }
+
+        .form-control {
+            width: 100% !important;
+            padding: 0.5rem !important;
+            border: 1px solid #ccc !important;
+            border-radius: 4px !important;
+            font-size: 1rem !important;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem !important;
+            font-size: 1rem !important;
+            border-radius: 4px !important;
+        }
+
+        .btn-primary {
+            background-color: var(--primary) !important;
+            border-color: var(--primary) !important;
+            color: #fff !important;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--tertiary) !important;
+            border-color: var(--tertiary) !important;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: #fff !important;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268 !important;
+            border-color: #5a6268 !important;
+        }
+
+        .status-message.error {
+            color: red !important;
+        }
+
+        .status-message.success {
+            color: green !important;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.8rem 0.5rem !important;
+            }
+
+            .navbar-brand {
+                margin-left: 40px !important;
+            }
+
+            .navbar .container-fluid {
+                padding: 0 0.5rem !important;
+                justify-content: space-between !important;
+            }
+
+            .dropdown-toggle {
+                font-size: 0.65rem !important;
+            }
+
+            .sidebar-toggle {
+                display: block !important;
+                left: 10px !important;
+                top: 12px !important;
+            }
+
+            .sidebar {
+                width: 200px !important;
+                padding-top: 80px !important;
+                transform: translateX(-100%) !important;
+                transition: transform 0.3s ease !important;
+            }
+
+            .sidebar.active {
+                transform: translateX(0) !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 1rem !important;
+                padding-top: 80px !important;
+            }
+
+            .page-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+
+            .page-header h1 {
+                margin-bottom: 1rem !important;
+            }
+
+            .edit-form {
+                padding: 1rem !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/planner/dashboard.html">
+                <img src="/assets/logo.png" alt="Logo" class="me-2">
+                <span class="text-white fw-bold">EventManager</span>
+            </a>
+            <div class="dropdown">
+                <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="userName">Planner Name</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a></li>
+                    <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/planner/dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a class="nav-link active" href="/planner/my-events.html"><i class="fas fa-calendar-alt"></i> My Events</a>
+            <a class="nav-link" href="/planner/create-event.html"><i class="fas fa-plus-circle"></i> Create Events</a>
+            <a class="nav-link" href="/planner/upcoming-events.html"><i class="fas fa-calendar-check"></i> Upcoming Events</a>
+            <a class="nav-link" href="/planner/make-payment.html"><i class="fas fa-credit-card"></i> Make Payment</a>
+            <a class="nav-link" href="/planner/transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a class="nav-link" href="/planner/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Edit Event</h1>
+        </div>
+
+        <div class="edit-form">
+            <form id="editEventForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" class="form-control" id="eventName" name="eventName" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" class="form-control" id="location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label for="time">Time</label>
+                    <input type="time" class="form-control" id="time" name="time" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="numberOfGuests">Number of Guests</label>
+                    <input type="number" class="form-control" id="numberOfGuests" name="numberOfGuests" min="1" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <button type="button" class="btn btn-secondary ms-2" onclick="cancelEdit()">Cancel</button>
+            </form>
+            <p class="status-message mt-3" id="statusMessage"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentEventId;
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            if (!token) {
+                window.location.href = "/auth/login.html";
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            currentEventId = urlParams.get('eventId');
+            if (!currentEventId) {
+                alert("Event ID not provided.");
+                window.location.href = "/planner/upcoming-events.html";
+                return;
+            }
+
+            await fetchUserProfile(token);
+            await loadEventDetails();
+
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+
+            if (window.innerWidth <= 768) {
+                sidebarToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('active');
+                });
+
+                document.addEventListener('click', (e) => {
+                    const dropdown = document.querySelector('.dropdown-menu');
+                    const dropdownToggle = document.querySelector('.dropdown-toggle');
+                    if (!sidebarToggle.contains(e.target) && !sidebar.contains(e.target) && !dropdown.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                        sidebar.classList.remove('active');
+                    }
+                });
+            }
+
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+
+            const form = document.getElementById('editEventForm');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await updateEvent();
+            });
+        });
+
+        async function fetchUserProfile(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/planner/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                console.log("User fetch status:", response.status);
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.log("User fetch error:", errorText);
+                    if (response.status === 401) {
+                        console.log("Unauthorized: Invalid or expired token, redirecting to login.");
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        return;
+                    }
+                    throw new Error(`Failed to fetch user profile: ${response.status}`);
+                }
+
+                const userData = await response.json();
+                console.log("User data:", userData);
+                document.getElementById('userName').textContent = userData.fullName || userData.username || 'Planner';
+            } catch (error) {
+                console.error("Error fetching user profile:", error);
+                document.getElementById('userName').textContent = 'Planner';
+            }
+        }
+
+        async function loadEventDetails() {
+            try {
+                const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+                const response = await fetch(`http://localhost:5203/api/event/${currentEventId}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Error fetching event details:", errorText);
+                    throw new Error(`Failed to fetch event details: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log("Event data:", data);
+                
+                if (!data.event) {
+                    throw new Error("API response does not contain an 'event' property.");
+                }
+
+                const event = data.event;
+                document.getElementById('eventName').value = event.eventName || event.EventName || '';
+                document.getElementById('location').value = event.location || event.Location || '';
+                document.getElementById('date').value = event.date ? new Date(event.date).toISOString().split('T')[0] : '';
+                document.getElementById('time').value = event.time || event.Time || '';
+                document.getElementById('description').value = event.description || event.Description || '';
+                document.getElementById('numberOfGuests').value = event.numberOfGuests || event.NumberOfGuests || 1;
+            } catch (error) {
+                console.error("Error loading event details:", error);
+                document.getElementById('statusMessage').textContent = "Failed to load event details: " + error.message;
+                document.getElementById('statusMessage').classList.add('error');
+            }
+        }
+
+        async function updateEvent() {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.textContent = '';
+            statusMessage.classList.remove('error', 'success');
+
+            try {
+                const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+                if (!token) {
+                    throw new Error("Not authenticated");
+                }
+
+                const eventData = {
+                    eventName: document.getElementById('eventName').value,
+                    location: document.getElementById('location').value,
+                    date: document.getElementById('date').value,
+                    time: document.getElementById('time').value,
+                    description: document.getElementById('description').value,
+                    numberOfGuests: parseInt(document.getElementById('numberOfGuests').value)
+                };
+
+                const response = await fetch(`http://localhost:5203/api/events/${currentEventId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(eventData)
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error("Error updating event:", errorText);
+                    throw new Error(`Failed to update event: ${response.status}`);
+                }
+
+                const updatedEvent = await response.json();
+                console.log("Event updated:", updatedEvent);
+                statusMessage.textContent = "Event updated successfully!";
+                statusMessage.classList.add('success');
+                setTimeout(() => {
+                    window.location.href = `/planner/event-details.html?eventId=${currentEventId}`;
+                }, 2000);
+            } catch (error) {
+                console.error("Error updating event:", error);
+                statusMessage.textContent = "Error updating event: " + error.message;
+                statusMessage.classList.add('error');
+            }
+        }
+
+        function cancelEdit() {
+            window.location.href = `/planner/event-details.html?eventId=${currentEventId}`;
+        }
+
+        function logout() {
+            localStorage.removeItem("jwtToken");
+            sessionStorage.removeItem("jwtToken");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>

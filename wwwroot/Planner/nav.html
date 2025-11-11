@@ -1,0 +1,22 @@
+<nav class="navbar navbar-expand-lg">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="/planner/dashboard.html" style="z-index: 10;">
+            <img src="/assets/logo.png" alt="Logo" class="me-2" style="height: 30px;">
+            <span class="text-white fw-bold">Yoris Dev studio</span>
+        </a>
+        <!-- User Profile and Logout -->
+        <div class="ms-auto d-flex align-items-center">
+            <div class="dropdown">
+                <a class="d-flex align-items-center text-white text-decoration-none" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="/assets/user-placeholder.png" alt="User" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+                    <span id="userName">Planner Name</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="/planner/profile-settings.html">Profile Settings</a></li>
+                    <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions - EventManager Admin</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+        :root {
+            --accent: #041915;
+            --primary: #1e493d;
+            --secondary: #bf8c73;
+            --tertiary: #2a5f47;
+            --quaternary: #d4a589;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            background-color: #e0e0e0;
+            color: var(--primary);
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(4, 25, 21, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 1rem 0.5rem;
+        }
+
+        .navbar-brand {
+            z-index: 1000;
+            position: relative;
+        }
+
+        .navbar-brand img {
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        .navbar-brand span {
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .dropdown-toggle {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--secondary);
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 4px;
+            border-top: 0.2em solid #fff;
+            border-right: 0.2em solid transparent;
+            border-left: 0.2em solid transparent;
+        }
+
+        .dropdown-menu {
+            background: rgba(4, 25, 21, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: absolute;
+            top: calc(100% + 5px);
+            right: 0;
+            left: auto;
+            min-width: 120px;
+            z-index: 1001;
+            padding: 0.4rem 0;
+        }
+
+        .dropdown-item {
+            color: #fff;
+            padding: 0.4rem 0.8rem;
+            font-size: 0.75rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--tertiary);
+            color: var(--secondary);
+        }
+
+        .notification-icon {
+            position: relative;
+            margin-right: 1rem;
+        }
+
+        .notification-icon i {
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #dc3545;
+            color: #fff;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+        }
+
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 12px;
+            left: 10px;
+            z-index: 1001;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .sidebar-toggle span {
+            width: 25px;
+            height: 3px;
+            background: #fff;
+            margin: 5px 0;
+            display: block;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--tertiary);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 80px;
+            overflow-y: auto;
+            z-index: 999;
+        }
+
+        .sidebar .nav-link {
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1rem;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: var(--primary);
+            color: var(--secondary);
+        }
+
+        .sidebar .nav-link i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin: 0;
+            position: relative;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--secondary);
+        }
+
+        .section-card {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section-card h2 {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .btn-approve {
+            background-color: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 4px;
+            font-size: 0.75rem;
+        }
+
+        .btn-reject {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        .btn-approve:hover {
+            background-color: #2a5f47;
+        }
+
+        .btn-reject:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1.2rem 0.5rem;
+            }
+
+            .navbar-brand {
+                margin-left: 40px;
+            }
+
+            .dropdown-toggle {
+                font-size: 0.75rem;
+            }
+
+            .dropdown-toggle::after {
+                border-top: 0.18em solid #fff;
+                border-right: 0.18em solid transparent;
+                border-left: 0.18em solid transparent;
+            }
+
+            .sidebar {
+                width: 200px;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+                padding-top: 90px;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .section-card {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .page-header h1 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="/admin/admin-dashboard.html">
+                <img src="/assets/logo.png" alt="Logo" class="me-2" style="height: 20px;">
+                <span class="text-white fw-bold">EventManager</span>
+            </a>
+            <div class="me-3 d-flex align-items-center">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                    <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
+                </div>
+                <div class="dropdown">
+                    <a class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" href="#" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span id="userName">Admin Name</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li><a class="dropdown-item" href="/admin/profile-settings.html">Profile Settings</a></li>
+                        <li><a class="dropdown-item" href="/auth/login.html" id="logoutLink">Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="sidebar-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="sidebar">
+        <nav class="nav flex-column">
+            <a class="nav-link" href="/admin/admin-dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+            <a class="nav-link" href="/admin/users.html"><i class="fas fa-users"></i> Users</a>
+            <a class="nav-link" href="/admin/Events.html"><i class="fas fa-calendar-alt"></i> Events </a>
+            <a class="nav-link" href="/admin/payment-settings.html"><i class="fas fa-credit-card"></i> Payment Settings</a>
+            <a class="nav-link" href="/admin/create-event.html"><i class="fas fa-plus-circle"></i> Create Event</a>
+            <a class="nav-link active" href="/admin/transactions.html"><i class="fas fa-exchange-alt"></i> Transactions</a>
+            <a class="nav-link" href="/admin/email-service.html"><i class="fas fa-envelope"></i> Email Service</a>
+            <a class="nav-link" href="/admin/site-settings.html"><i class="fas fa-cog"></i> Site Settings</a>
+            <a class="nav-link" href="/admin/profile-settings.html"><i class="fas fa-user-cog"></i> Profile Settings</a>
+            <a class="nav-link" href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>Transactions</h1>
+        </div>
+
+        <div class="section-card">
+            <h2>Pending Transactions</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Planner</th>
+                            <th>Amount (₦)</th>
+                            <th>Gateway</th>
+                            <th>Proof File</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pendingTransactionsTable">
+                        <tr><td colspan="7">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="pendingTransactionsError" class="text-danger mt-2" style="display: none;"></div>
+        </div>
+
+        <div class="section-card">
+            <h2>Approved Transactions</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Planner</th>
+                            <th>Amount (₦)</th>
+                            <th>Gateway</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="approvedTransactionsTable">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="approvedTransactionsError" class="text-danger mt-2" style="display: none;"></div>
+        </div>
+
+        <div class="section-card">
+            <h2>Rejected Transactions</h2>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Planner</th>
+                            <th>Amount (₦)</th>
+                            <th>Gateway</th>
+                            <th>Proof File</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rejectedTransactionsTable">
+                        <tr><td colspan="6">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="rejectedTransactionsError" class="text-danger mt-2" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async function () {
+            const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+            if (!token) {
+                console.log("[Transactions] No JWT token found, redirecting to login");
+                window.location.href = "/auth/login.html";
+                return;
+            }
+
+            await loadUserProfile(token);
+            await fetchPendingTransactions(token);
+            await fetchApprovedTransactions(token);
+            await fetchRejectedTransactions(token);
+            await updateNotificationBadge(token);
+
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('active');
+            });
+
+            document.addEventListener('click', (e) => {
+                const dropdown = document.querySelector('.dropdown-menu');
+                const dropdownToggle = document.querySelector('.dropdown-toggle');
+                if (!sidebarToggle.contains(e.target) && !sidebar.contains(e.target) && !dropdown.contains(e.target) && !dropdownToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            });
+
+            const logoutLink = document.getElementById('logoutLink');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    logout();
+                });
+            }
+        });
+
+        async function loadUserProfile(token) {
+            try {
+                const profileResponse = await fetch("http://localhost:5203/api/admin/profile", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!profileResponse.ok) {
+                    if (profileResponse.status === 401) {
+                        console.log("[Transactions] Unauthorized (401), clearing tokens and redirecting to login");
+                        localStorage.removeItem("jwtToken");
+                        sessionStorage.removeItem("jwtToken");
+                        window.location.href = "/auth/login.html";
+                        return;
+                    }
+                    throw new Error(`Failed to fetch profile: ${profileResponse.status}`);
+                }
+
+                const profileData = await profileResponse.json();
+                document.getElementById("userName").textContent = profileData.fullName || profileData.username || 'Admin Name';
+            } catch (error) {
+                console.error("[Transactions] Error loading profile:", error);
+                document.getElementById("userName").textContent = 'Admin Name';
+            }
+        }
+
+        async function fetchPendingTransactions(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/admin/transactions/pending", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch pending transactions: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                console.log('[DEBUG] Pending Transactions Response:', responseData);
+                const data = Array.isArray(responseData) ? responseData : (responseData.$values || responseData.data);
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Unexpected response format: Expected an array of transactions.');
+                }
+
+                const tableBody = document.getElementById('pendingTransactionsTable');
+                tableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="7">No pending transactions found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    const proofFileLink = transaction.proofFilePath ? `<a href="http://localhost:5203/api/admin/transactions/proof/${transaction.id}" target="_blank">View Proof</a>` : 'No Proof';
+                    const actions = transaction.gateway === 'Manual' ? `
+                        <button class="btn btn-approve" onclick="approveTransaction(${transaction.id}, true, '${token}')">Approve</button>
+                        <button class="btn btn-reject" onclick="approveTransaction(${transaction.id}, false, '${token}')">Reject</button>
+                    ` : '-';
+                    row.innerHTML = `
+                        <td>${transaction.id}</td>
+                        <td>${transaction.userFullName || transaction.userUsername || 'Unknown'}</td>
+                        <td>₦${transaction.amount.toFixed(2)}</td>
+                        <td>${transaction.gateway}</td>
+                        <td>${proofFileLink}</td>
+                        <td>${new Date(transaction.createdAt).toLocaleDateString()}</td>
+                        <td>${actions}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('[Transactions] Error fetching pending transactions:', error);
+                document.getElementById('pendingTransactionsError').style.display = 'block';
+                document.getElementById('pendingTransactionsError').textContent = `Error loading pending transactions: ${error.message}`;
+            }
+        }
+
+        async function fetchApprovedTransactions(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/admin/transactions/approved", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch approved transactions: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                console.log('[DEBUG] Approved Transactions Response:', responseData);
+                const data = Array.isArray(responseData) ? responseData : (responseData.$values || responseData.data);
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Unexpected response format: Expected an array of transactions.');
+                }
+
+                const tableBody = document.getElementById('approvedTransactionsTable');
+                tableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5">No approved transactions found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaction.id}</td>
+                        <td>${transaction.userFullName || transaction.userUsername || 'Unknown'}</td>
+                        <td>₦${transaction.amount.toFixed(2)}</td>
+                        <td>${transaction.gateway}</td>
+                        <td>${new Date(transaction.updatedAt || transaction.createdAt).toLocaleDateString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('[Transactions] Error fetching approved transactions:', error);
+                document.getElementById('approvedTransactionsError').style.display = 'block';
+                document.getElementById('approvedTransactionsError').textContent = `Error loading approved transactions: ${error.message}`;
+            }
+        }
+
+        async function fetchRejectedTransactions(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/admin/transactions/rejected", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch rejected transactions: ${response.status}`);
+                }
+
+                const responseData = await response.json();
+                console.log('[DEBUG] Rejected Transactions Response:', responseData);
+                const data = Array.isArray(responseData) ? responseData : (responseData.$values || responseData.data);
+
+                if (!Array.isArray(data)) {
+                    throw new Error('Unexpected response format: Expected an array of transactions.');
+                }
+
+                const tableBody = document.getElementById('rejectedTransactionsTable');
+                tableBody.innerHTML = '';
+
+                if (data.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="6">No rejected transactions found.</td></tr>';
+                    return;
+                }
+
+                data.forEach(transaction => {
+                    const row = document.createElement('tr');
+                    const proofFileLink = transaction.proofFilePath ? `<a href="http://localhost:5203/api/admin/transactions/proof/${transaction.id}" target="_blank">View Proof</a>` : 'No Proof';
+                    row.innerHTML = `
+                        <td>${transaction.id}</td>
+                        <td>${transaction.userFullName || transaction.userUsername || 'Unknown'}</td>
+                        <td>₦${transaction.amount.toFixed(2)}</td>
+                        <td>${transaction.gateway}</td>
+                        <td>${proofFileLink}</td>
+                        <td>${new Date(transaction.updatedAt || transaction.createdAt).toLocaleDateString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('[Transactions] Error fetching rejected transactions:', error);
+                document.getElementById('rejectedTransactionsError').style.display = 'block';
+                document.getElementById('rejectedTransactionsError').textContent = `Error loading rejected transactions: ${error.message}`;
+            }
+        }
+
+        async function approveTransaction(transactionId, isApproved, token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/admin/transactions/approve", {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ transactionId, isApproved })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.message || 'Failed to update transaction status');
+                }
+
+                alert(`Transaction ${isApproved ? 'approved' : 'rejected'} successfully.`);
+                await fetchPendingTransactions(token);
+                await fetchApprovedTransactions(token);
+                await fetchRejectedTransactions(token);
+                await updateNotificationBadge(token);
+            } catch (error) {
+                console.error('[Transactions] Error updating transaction status:', error);
+                document.getElementById('pendingTransactionsError').style.display = 'block';
+                document.getElementById('pendingTransactionsError').textContent = `Error updating transaction: ${error.message}`;
+            }
+        }
+
+        async function updateNotificationBadge(token) {
+            try {
+                const response = await fetch("http://localhost:5203/api/admin/notifications/pending-transactions-count", {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch notification count: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const badge = document.getElementById('notificationBadge');
+                if (data.count > 0) {
+                    badge.textContent = data.count;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('[Transactions] Error fetching notification count:', error);
+            }
+        }
+
+        function logout() {
+            console.log("[Transactions] Logging out");
+            localStorage.removeItem("jwtToken");
+            sessionStorage.removeItem("jwtToken");
+            window.location.href = "/auth/login.html";
+        }
+    </script>
+</body>
+</html>
